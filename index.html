@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Mp3 Mp4 Video Search And Downloader</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background-color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            width: 100%;
+            height: 80px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            height: 100%;
+            max-width: 1400px;
+            width: 100%;
+            padding: 10px 20px;
+        }
+
+        .logo {
+            height: 40px;
+            width: 40px;
+            object-fit: contain;
+        }
+
+        h1 {
+            text-transform: uppercase;
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+            text-align: center;
+            flex: initial;
+            letter-spacing: 1px;
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        h4 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #222222;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .search-box {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            background: #ffffff;
+            color: #333333;
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+
+        .search-box input::placeholder {
+            color: #888888;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #222222;
+        }
+
+        .search-box button {
+            padding: 12px 25px;
+            background: #222222;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            font-family: 'Poppins', Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .search-box button:hover {
+            background: #444444;
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            list-style: none;
+            padding: 0;
+        }
+
+        @media (min-width: 1200px) {
+            .results {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .video-card {
+            background: #222222;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .video-info {
+            padding: 15px;
+            color: #fff;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-info h3 {
+            margin: 0 0 10px;
+            font-size: 15px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 42px;
+        }
+
+        .video-info h3 a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .video-info h3 a:hover {
+            text-decoration: underline;
+        }
+
+        .video-info p {
+            margin: 6px 0;
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        .video-info p a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .video-info p a:hover {
+            text-decoration: underline;
+        }
+
+        .download-section {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .download-button {
+            width: 100%;
+            padding: 12px;
+            background: #444444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            font-family: 'Poppins', Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .download-button:hover {
+            background: #555555;
+        }
+
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #222222;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            z-index: 1000;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .search-box {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .results {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html">
+                <img src="logo.png" alt="Logo" class="logo">
+            </a>
+            <a href="index.html" style="text-decoration: none;">
+                <h1>YouTube Mp3 Mp4 Video Search And Downloader</h1>
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="search-box">
+            <input type="text" id="searchQuery" placeholder="Paste YouTube video URL or search..." onkeypress="if(event.key === 'Enter') fetchVideos()">
+            <button onclick="fetchVideos()">
+                <i class="fas fa-search"></i>
+                Search
+            </button>
+        </div>
+        <div id="loading" class="hidden">Yükleniyor...</div>
+        <ul class="results" id="results"></ul>
+    </div>
+
+    <script>
+        const proxyUrl = "https://ab-proxy1.abrahamdw882.workers.dev/?u=";
+
+    async function fetchWithRetry(url, options = {}, retries = 5, backoff = 500) {
+        let attempt = 0;
+        while (attempt < retries || retries === -1) { 
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+                console.log(`Attempt ${attempt + 1} - Fetching: ${url}`);
+                const response = await fetch(url, { 
+                    ...options, 
+                    signal: controller.signal,
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                console.log(`Success after ${attempt + 1} attempts.`);
+                return response;
+            } catch (error) {
+                console.error(`Attempt ${attempt + 1} failed: ${error.message}`);
+                attempt++;
+
+                if (retries !== -1 && attempt >= retries) {
+                    console.error("Max retries reached. Request failed.");
+                    throw error;
+                }
+
+                const delay = Math.min(backoff * Math.pow(2, attempt), 10000);
+                console.log(`Retrying in ${delay}ms...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        }
+    }
+
+    async function fetchVideos() {
+        const query = document.getElementById("searchQuery").value;
+        const resultsContainer = document.getElementById("results");
+        const loadingDiv = document.getElementById("loading");
+        resultsContainer.innerHTML = "";
+
+        if (!query) {
+            resultsContainer.innerHTML = "<p style='color: #222222; text-align: center; font-size: 16px;'>Please enter a search query or YouTube URL.</p>";
+            return;
+        }
+
+        loadingDiv.classList.remove("hidden");
+
+        try {
+            const apiUrl = `https://weeb-api.vercel.app/ytsearch?query=${encodeURIComponent(query)}`;
+            const response = await fetchWithRetry(proxyUrl + encodeURIComponent(apiUrl), {}, -1); 
+
+            const data = await response.json();
+
+            if (!data || (Array.isArray(data) && data.length === 0)) {
+                resultsContainer.innerHTML = "<p style='color: #222222; text-align: center; font-size: 16px;'>No results found.</p>";
+                return;
+            }
+
+            data.forEach((video) => {
+                const videoCard = document.createElement("li");
+                videoCard.classList.add("video-card");
+
+                videoCard.innerHTML = `
+                    <img src="${video.thumbnail}" alt="${video.title}">
+                    <div class="video-info">
+                        <h3><a href="${video.url}" target="_blank">${video.title}</a></h3>
+                        <p>Channel: <a href="${video.author.url}" target="_blank">${video.author.name}</a></p>
+                        <p>Views: ${video.views.toLocaleString()}</p>
+                        <p>Duration: ${video.duration.timestamp}</p>
+                        <button class="download-button" onclick="fetchDownloadLinks(this, '${video.url}')">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <div class="download-section" id="download-${video.url}" style="display: none;"></div>
+                    </div>
+                `;
+
+                resultsContainer.appendChild(videoCard);
+            });
+        } catch (error) {
+            resultsContainer.innerHTML = `<p style='color: #222222; text-align: center; font-size: 16px;'>Could not fetch results. Please try again later.</p>`;
+            console.error(error);
+        } finally {
+            loadingDiv.classList.add("hidden");
+        }
+    }
+
+    async function downloadFile(url, filename) {
+        try {
+            const response = await fetch(proxyUrl + encodeURIComponent(url));
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = filename.replace(/[<>:"/\\|?*]/g, '_');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(downloadUrl);
+        } catch (error) {
+            console.error('Download failed:', error);
+            alert('Download failed. Please try again.');
+        }
+    }
+
+    async function fetchDownloadLinks(button, videoUrl) {
+        const originalText = button.innerText;
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+
+        const downloadSection = document.getElementById(`download-${videoUrl}`);
+        downloadSection.innerHTML = "";
+        downloadSection.style.display = "block";
+
+        try {
+            const mp3ApiUrl = `https://api.giftedtech.my.id/api/download/dlmp3?apikey=_0x5aff35,_0x1876stqr&url=${encodeURIComponent(videoUrl)}`;
+            const mp4ApiUrl = `https://api.giftedtech.my.id/api/download/dlmp4?apikey=_0x5aff35,_0x1876stqr&url=${encodeURIComponent(videoUrl)}`;
+
+            const [mp3Response, mp4Response] = await Promise.all([
+                fetchWithRetry(proxyUrl + encodeURIComponent(mp3ApiUrl), {}, -1),
+                fetchWithRetry(proxyUrl + encodeURIComponent(mp4ApiUrl), {}, -1)
+            ]);
+
+            let mp3Data, mp4Data;
+
+            try {
+                mp3Data = await mp3Response.json();
+            } catch (e) {
+                console.error("MP3 JSON Parsing Error:", e);
+                mp3Data = {};
+            }
+
+            try {
+                mp4Data = await mp4Response.json();
+            } catch (e) {
+                console.error("MP4 JSON Parsing Error:", e);
+                mp4Data = {};
+            }
+
+            if (mp3Data.success && mp3Data.result?.download_url) {
+                const audioDownloadButton = document.createElement("button");
+                audioDownloadButton.classList.add("download-button");
+                audioDownloadButton.innerHTML = `<i class="fas fa-music"></i> Download Audio (${mp3Data.result.quality})`;
+                audioDownloadButton.onclick = () => downloadFile(
+                    mp3Data.result.download_url,
+                    `${mp3Data.result.title || 'ses'}.mp3`
+                );
+                downloadSection.appendChild(audioDownloadButton);
+            }
+
+            if (mp4Data.success && mp4Data.result?.download_url) {
+                const videoDownloadButton = document.createElement("button");
+                videoDownloadButton.classList.add("download-button");
+                videoDownloadButton.innerHTML = `<i class="fas fa-video"></i> Download Video (${mp4Data.result.quality})`;
+                videoDownloadButton.onclick = () => downloadFile(
+                    mp4Data.result.download_url,
+                    `${mp4Data.result.title || 'video'}.mp4`
+                );
+                downloadSection.appendChild(videoDownloadButton);
+            }
+
+            if (!mp3Data.success && !mp4Data.success) {
+                downloadSection.innerHTML = "<p style='color: #aaa; text-align: center;'>No download links found.</p>";
+            }
+        } catch (error) {
+            downloadSection.innerHTML = `<p style='color: #aaa; text-align: center;'>Could not fetch download links. Please try again later.</p>`;
+            console.error(error);
+        } finally {
+            button.innerHTML = `<i class="fas fa-download"></i> Download`;
+            button.disabled = false;
+        }
+    }
+    </script>
+</body>
+</html>
